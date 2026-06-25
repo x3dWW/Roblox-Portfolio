@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>powerstudio | Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind Configuration for Dynamic Discord Theme Palette -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        discord: {
+                            // Dynamic theme maps tied to CSS Custom Variables
+                            darkest: 'var(--bg-darkest)',
+                            darker: 'var(--bg-darker)',
+                            dark: 'var(--bg-dark)',
+                            chatInput: 'var(--bg-chatInput)',
+                            lightGray: 'var(--text-lightGray)',
+                            grayText: 'var(--text-grayText)',
+                            headerWhite: 'var(--text-headerWhite)',
+                            borderColor: 'var(--border-color)',
+                            cardBg: 'var(--bg-card)',
+                            
+                            // Static brand colors (remain consistent)
+                            blurple: '#5865f2',   // Classic discord blurple
+                            green: '#23a55a',     // Active/online green
+                            yellow: '#f0b232',    // Idle yellow
+                            red: '#f23f43',       // DND red
+                            white: '#ffffff'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['gg sans', 'Whitney', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons for clean, accurate vector icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* CSS Variables Supporting Seamless Theme Toggling (Dark / Light Mode) */
+        :root {
+            --bg-darkest: #1e1f22;       /* Server List sidebar background */
+            --bg-darker: #2b2d31;        /* Channel List sidebar background */
+            --bg-dark: #313338;          /* Chat window background */
+            --bg-chatInput: #383a40;     /* Search / message box background */
+            --bg-card: #2b2d31;          /* Card items background */
+            --text-lightGray: #dbdee1;   /* Primary body text color */
+            --text-grayText: #949ba4;    /* Muted label text color */
+            --text-headerWhite: #f2f3f5; /* Bright title header color */
+            --border-color: rgba(30, 31, 34, 0.4);
+        }
+
+        .light-theme {
+            --bg-darkest: #e3e5e8;       /* Discord Light Server panel background */
+            --bg-darker: #f2f3f5;        /* Discord Light Channel list background */
+            --bg-dark: #ffffff;          /* Discord Light Main chat background */
+            --bg-chatInput: #e3e5e8;     /* Light input field box */
+            --bg-card: #f2f3f5;          /* Light card items background */
+            --text-lightGray: #313338;   /* Muted text on white */
+            --text-grayText: #5c5e66;    /* Secondary slate labels */
+            --text-headerWhite: #060607; /* Darkest headers */
+            --border-color: rgba(227, 229, 232, 0.8);
+        }
+
+        /* Custom scrollbar matching Discord's track-style design */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-darkest);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.4);
+        }
+        
+        .transition-all-300 {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Standard active state highlighting */
+        .channel-active {
+            background-color: rgba(79, 84, 92, 0.3);
+            color: var(--text-headerWhite) !important;
+        }
+
+        /* Custom Keyframe Animations for active elements */
+        @keyframes spinPropeller {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .spin-propeller {
+            animation: spinPropeller 0.8s linear infinite;
+            transform-origin: 60px 52px;
+        }
+        .spin-propeller-pads {
+            animation: spinPropeller 0.6s linear infinite;
+        }
+
+        @keyframes sweepRadar {
+            0% { stroke-dashoffset: 80; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .sweep-radar {
+            stroke-dasharray: 20 10;
+            animation: sweepRadar 3s linear infinite;
+        }
+
+        @keyframes pulseBeam {
+            0%, 100% { opacity: 0.3; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+        .pulse-beam {
+            animation: pulseBeam 2s ease-in-out infinite;
+        }
+
+        /* Slide Transition Animations for carousel track */
+        .carousel-track {
+            perspective: 1000px;
+        }
+        .slide-in-right {
+            animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(30px) rotateY(-5deg); opacity: 0; }
+            to { transform: translateX(0) rotateY(0deg); opacity: 1; }
+        }
+
+        /* Modal Entrance Smooth Pop Animations */
+        @keyframes modalPopIn {
+            0% { transform: scale(0.93) translateY(12px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .animate-modal-pop {
+            animation: modalPopIn 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+        }
+    </style>
+</head>
+<body class="bg-discord-darkest text-discord-lightGray font-sans h-screen flex overflow-hidden selection:bg-discord-blurple/30 selection:text-discord-headerWhite transition-all-300">
+
+    <!-- OVERALL WRAPPER FOR MOBILE LAYOUTS -->
+    <div class="flex flex-1 h-full w-full relative overflow-hidden">
+
+        <!-- MOBILE NAV OVERLAY & HAMBURGER DRAWER -->
+        <div id="mobile-sidebar" class="fixed inset-0 z-50 flex md:hidden pointer-events-none transition-all duration-300">
+            <!-- Backdrop -->
+            <div id="mobile-backdrop" class="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+            
+            <!-- Sidebar Drawer itself -->
+            <div id="mobile-drawer" class="w-[260px] bg-discord-darker h-full flex flex-col justify-between transform -translate-x-full transition-transform duration-300 ease-out pointer-events-auto shadow-2xl z-10">
+                
+                <!-- Server Title & Channels -->
+                <div class="flex flex-col flex-1 overflow-y-auto">
+                    <div class="h-12 border-b border-discord-darkest flex items-center justify-between px-4 text-discord-headerWhite font-semibold bg-discord-darker">
+                        <span class="tracking-wide">PORTFOLIO</span>
+                        <button onclick="toggleMobileSidebar(false)" class="text-discord-grayText hover:text-discord-headerWhite transition-colors">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Channels Container inside mobile drawer -->
+                    <div class="p-2 space-y-0.5" id="mobile-channels-list">
+                        <span class="text-[12px] uppercase tracking-wider font-bold text-discord-grayText px-2 block my-2">Text Channels</span>
+                        
+                        <a href="#about-me" onclick="toggleMobileSidebar(false)" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[15px]" data-section="about-me">
+                            <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                            <span class="font-medium">about-me</span>
+                        </a>
+                        <a href="#skills" onclick="toggleMobileSidebar(false)" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[15px]" data-section="skills">
+                            <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                            <span class="font-medium">skills</span>
+                        </a>
+                        <a href="#featured-systems" onclick="toggleMobileSidebar(false)" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[15px]" data-section="featured-systems">
+                            <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                            <span class="font-medium">featured-systems</span>
+                        </a>
+                        <a href="#reviews" onclick="toggleMobileSidebar(false)" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[15px]" data-section="reviews">
+                            <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                            <span class="font-medium">reviews</span>
+                        </a>
+                        <a href="#contact" onclick="toggleMobileSidebar(false)" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[15px]" data-section="contact">
+                            <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                            <span class="font-medium">contact</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- User profile in mobile drawer footer -->
+                <div class="p-2 bg-discord-darkest flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="relative w-8 h-8 rounded-full bg-discord-blurple flex items-center justify-center font-bold text-white text-sm">
+                            P
+                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-discord-green rounded-full border-2 border-discord-darkest"></span>
+                        </div>
+                        <div class="flex flex-col leading-tight">
+                            <span class="text-[13px] font-bold text-discord-headerWhite">powerstudio</span>
+                            <span class="text-[10px] text-discord-grayText">Online</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-discord-grayText">
+                        <button onclick="toggleTheme()" class="p-1 hover:bg-discord-chatInput hover:text-white rounded transition-colors" title="Toggle Light/Dark Theme">
+                            <i data-lucide="settings" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- DESKTOP LEFT SIDEBAR (FIXED 240PX) -->
+        <aside class="hidden md:flex flex-col w-[240px] bg-discord-darker h-full select-none flex-shrink-0 z-40 border-r border-discord-borderColor transition-all-300">
+            <!-- Server Header Dropdown Area -->
+            <div class="h-12 border-b border-discord-borderColor px-4 flex items-center justify-between text-discord-headerWhite font-semibold cursor-pointer hover:bg-discord-chatInput/30 transition-colors">
+                <span class="tracking-wide text-[15px] font-bold">PORTFOLIO</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-discord-grayText"></i>
+            </div>
+
+            <!-- Channels / Navigation Feed -->
+            <div class="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
+                <div class="flex items-center justify-between text-[12px] font-bold text-discord-grayText px-2 tracking-wider uppercase mb-1.5 group">
+                    <div class="flex items-center gap-1">
+                        <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                        <span>Text Channels</span>
+                    </div>
+                    <i data-lucide="plus" class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-discord-lightGray hover:text-white"></i>
+                </div>
+
+                <a href="#about-me" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[14px]" data-section="about-me">
+                    <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                    <span class="font-medium">about-me</span>
+                </a>
+
+                <a href="#skills" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[14px]" data-section="skills">
+                    <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                    <span class="font-medium">skills</span>
+                </a>
+
+                <a href="#featured-systems" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[14px]" data-section="featured-systems">
+                    <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                    <span class="font-medium">featured-systems</span>
+                </a>
+
+                <a href="#reviews" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[14px]" data-section="reviews">
+                    <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                    <span class="font-medium">reviews</span>
+                </a>
+
+                <a href="#contact" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[14px]" data-section="contact">
+                    <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
+                    <span class="font-medium">contact</span>
+                </a>
+            </div>
+
+            <!-- Profile Info Segment at the bottom of sidebar -->
+            <div class="h-[52px] bg-discord-darkest px-2.5 flex items-center justify-between border-t border-discord-borderColor">
+                <div class="flex items-center gap-2 max-w-[130px] cursor-pointer group">
+                    <div class="relative w-8 h-8 rounded-full bg-discord-blurple flex items-center justify-center font-bold text-white text-sm select-none">
+                        P
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-discord-green rounded-full border-2 border-discord-darkest"></span>
+                    </div>
+                    <div class="flex flex-col leading-tight overflow-hidden">
+                        <span class="text-[13px] font-bold text-discord-headerWhite truncate group-hover:text-white">powerstudio</span>
+                        <span class="text-[11px] text-discord-grayText flex items-center gap-1">
+                            <span>Online</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1 text-discord-grayText">
+                    <button id="theme-btn" onclick="toggleTheme()" class="p-1 hover:bg-discord-chatInput hover:text-discord-headerWhite rounded transition-colors relative group" title="Theme Settings (Light/Dark)">
+                        <i data-lucide="settings" class="w-4.5 h-4.5"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN LAYOUT AREA (HEADER + CONTENT + FOOTER) -->
+        <div class="flex flex-col flex-1 h-full min-w-0 bg-discord-dark overflow-hidden transition-all-300">
+            
+            <!-- 1. HEADER NAVIGATION BAR -->
+            <header class="h-12 bg-discord-dark border-b border-discord-borderColor px-4 flex items-center justify-between select-none z-10 flex-shrink-0 transition-all-300">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <!-- Hamburger button for mobile devices -->
+                    <button onclick="toggleMobileSidebar(true)" class="md:hidden text-discord-grayText hover:text-discord-headerWhite transition-colors focus:outline-none">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    
+                    <i data-lucide="hash" class="w-6 h-6 text-discord-grayText hidden md:inline"></i>
+                    <span id="active-channel-header" class="text-discord-headerWhite font-bold text-[15px] truncate">about-me</span>
+                    
+                    <div class="hidden lg:block w-[1px] h-4 bg-discord-grayText/20 mx-1"></div>
+                    <span id="active-channel-description" class="hidden lg:inline text-discord-grayText text-[12px] truncate font-medium">Get to know the developer behind the systems.</span>
+                </div>
+
+                <!-- Right Utility Bar -->
+                <div class="flex items-center gap-4 text-discord-grayText flex-shrink-0">
+                    <!-- Working Search Bar -->
+                    <div class="relative hidden sm:block">
+                        <input type="text" onfocus="openQuickSwitcher()" id="header-search-input" placeholder="Find a channel... (Type here)" class="w-[144px] md:w-[244px] h-[24px] rounded bg-discord-darkest px-2 pr-6 text-[12px] text-discord-headerWhite placeholder:text-discord-grayText/60 focus:outline-none focus:ring-1 focus:ring-discord-blurple transition-all cursor-pointer">
+                        <i data-lucide="search" class="w-3.5 h-3.5 absolute right-2 top-1.5 text-discord-grayText/60 pointer-events-none"></i>
+                    </div>
+
+                    <button class="hover:text-discord-headerWhite transition-colors" title="Notification Settings" disabled>
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </button>
+                    <button class="hover:text-discord-headerWhite transition-colors" title="Pinned Messages" disabled>
+                        <i data-lucide="pin" class="w-5 h-5"></i>
+                    </button>
+                    <button class="hover:text-discord-headerWhite transition-colors" title="Member List" disabled>
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CHAT FEED CONTAINER WITH VERTICAL SCROLL -->
+            <main id="chat-feed" class="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-12">
+
+                <!-- WELCOME BANNER (Classic Discord First Message Style) -->
+                <section class="border-b border-discord-borderColor pb-8 select-none transition-all-300">
+                    <div class="w-[68px] h-[68px] rounded-full bg-discord-chatInput flex items-center justify-center mb-4 transition-all hover:scale-105 duration-200">
+                        <i data-lucide="hash" class="w-10 h-10 text-discord-headerWhite"></i>
+                    </div>
+                    <h1 class="text-3xl font-extrabold text-discord-headerWhite mb-2">Welcome to x3d's Portfolio!</h1>
+                    <p class="text-discord-grayText text-[15px] max-w-2xl leading-relaxed">
+                        This is the start of your journey. Browse through the developer channels below to explore core skills, specialized Roblox architectures, custom showcases, and glowing community recommendations.
+                    </p>
+                </section>
+
+
+                <!-- 2. ABOUT ME SECTION -->
+                <section id="about-me" class="scroll-mt-16">
+                    <!-- Header -->
+                    <div class="flex items-center gap-1.5 mb-6 border-b border-discord-borderColor pb-2">
+                        <i data-lucide="hash" class="w-6 h-6 text-discord-grayText"></i>
+                        <h2 class="text-discord-headerWhite font-bold text-xl uppercase tracking-wider">about-me</h2>
+                        <span class="text-xs text-discord-grayText ml-2 hidden sm:inline">— Get to know the developer behind the systems</span>
+                    </div>
+
+                    <!-- Profile Card (Discord Profile Design) -->
+                    <div class="bg-discord-cardBg rounded-lg border border-discord-borderColor overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl">
+                        <!-- Custom styled User Profile Header Banner -->
+                        <div class="h-28 bg-gradient-to-r from-discord-blurple via-[#4752c4] to-purple-800 relative">
+                            <!-- Floating Badges in corner -->
+                            <div class="absolute right-4 top-4 flex gap-1.5">
+                                <span class="bg-discord-darkest/60 backdrop-blur-sm text-[10px] text-white font-bold px-2.5 py-1 rounded flex items-center gap-1">
+                                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-discord-blurple"></i> VERIFIED DEV
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- User Profile Content container -->
+                        <div class="p-6 pt-0 relative">
+                            <!-- Profile Avatar overlapping the banner banner -->
+                            <div class="absolute -top-12 left-6">
+                                <div class="relative w-[92px] h-[92px] rounded-full bg-discord-darker p-1.5">
+                                    <div class="w-full h-full bg-discord-blurple rounded-full flex items-center justify-center text-white font-extrabold text-3xl select-none">
+                                        P
+                                    </div>
+                                    <span class="absolute bottom-1 right-1 w-6 h-6 bg-discord-green rounded-full border-[4px] border-discord-darker"></span>
+                                </div>
+                            </div>
+
+                            <!-- Flex adjustment offset for floated avatar and metadata -->
+                            <div class="pt-16 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 class="text-2xl font-black text-discord-headerWhite">x3d</h3>
+                                        <span class="bg-discord-blurple text-[10px] text-white font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                                            <i data-lucide="cpu" class="w-3 h-3"></i> DEV
+                                        </span>
+                                        <span class="bg-discord-chatInput text-[10px] text-discord-grayText font-bold px-1.5 py-0.5 rounded">
+                                            FOUNDER
+                                        </span>
+                                    </div>
+                                    <p class="text-discord-grayText text-sm mt-0.5">Founder of Power Studio</p>
+                                </div>
+
+                                <!-- Action Quick Links -->
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-discord-blurple/20 text-discord-blurple border border-discord-blurple/30 text-xs font-bold px-3 py-1 rounded">
+                                        AVAILABLE FOR HIRE
+                                    </span>
+                                    <span class="bg-discord-green/20 text-discord-green border border-discord-green/30 text-xs font-bold px-3 py-1 rounded">
+                                        OPEN TO ALL GENRES
+                                    </span>
+                                    <span class="bg-discord-chatInput text-discord-grayText text-xs font-bold px-3 py-1 rounded border border-discord-borderColor">
+                                        STUDIO: POWER STUDIO
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Main Bio and Information Details -->
+                            <div class="mt-6 border-t border-discord-borderColor pt-6">
+                                <h4 class="text-[15px] font-bold text-discord-headerWhite mb-2">Roblox Game & Systems Developer</h4>
+                                <p class="text-[14px] leading-relaxed text-discord-lightGray max-w-4xl">
+                                    Hey! I'm x3d - a Roblox developer with 4 years of professional experience building production-grade gameplay systems. I focus on the deep technical layer: networking, replication, combat, AI, and the kind of polish that keeps players coming back. While much of my featured work involves advanced simulation systems, that's not a limitation — I'm open to building any type of gameplay system, mechanic, or game genre.
+                                </p>
+                            </div>
+
+                            <!-- Counter Grid Block layout -->
+                            <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div class="bg-discord-dark p-4 rounded border border-discord-borderColor flex items-center gap-3 hover:translate-y-[-2px] transition-all duration-200">
+                                    <div class="p-2 bg-discord-blurple/15 rounded text-discord-blurple">
+                                        <i data-lucide="clock" class="w-5 h-5"></i>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-lg font-black text-discord-headerWhite">4+ YEARS</span>
+                                        <span class="text-[11px] text-discord-grayText uppercase font-bold tracking-wider">OF EXPERIENCE</span>
+                                    </div>
+                                </div>
+                                <div class="bg-discord-dark p-4 rounded border border-discord-borderColor flex items-center gap-3 hover:translate-y-[-2px] transition-all duration-200">
+                                    <div class="p-2 bg-discord-green/15 rounded text-discord-green">
+                                        <i data-lucide="package" class="w-5 h-5"></i>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-lg font-black text-discord-headerWhite">30+ SYSTEMS</span>
+                                        <span class="text-[11px] text-discord-grayText uppercase font-bold tracking-wider">SHIPPED AND PROVEN</span>
+                                    </div>
+                                </div>
+                                <div class="bg-discord-dark p-4 rounded border border-discord-borderColor flex items-center gap-3 hover:translate-y-[-2px] transition-all duration-200">
+                                    <div class="p-2 bg-yellow-500/15 rounded text-yellow-500">
+                                        <i data-lucide="rocket" class="w-5 h-5"></i>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-lg font-black text-discord-headerWhite">2023 EST.</span>
+                                        <span class="text-[11px] text-discord-grayText uppercase font-bold tracking-wider">STUDIO FOUNDED</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 3. SKILLS SECTION -->
+                <section id="skills" class="scroll-mt-16">
+                    <!-- Header -->
+                    <div class="flex items-center gap-1.5 mb-6 border-b border-discord-borderColor pb-2">
+                        <i data-lucide="hash" class="w-6 h-6 text-discord-grayText"></i>
+                        <h2 class="text-discord-headerWhite font-bold text-xl uppercase tracking-wider">skills</h2>
+                        <span class="text-xs text-discord-grayText ml-2 hidden sm:inline">— Core areas of technical expertise</span>
+                    </div>
+
+                    <!-- Responsive Skills Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        
+                        <!-- Skill Card 1 (Blue Accent) -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border-l-4 border-discord-blurple hover:translate-x-1.5 transition-all duration-200">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="network" class="w-5 h-5 text-discord-blurple animate-pulse"></i>
+                                <h3 class="text-discord-headerWhite font-bold text-[15px]">Multiplayer Infrastructure</h3>
+                            </div>
+                            <p class="text-discord-grayText text-sm leading-relaxed">
+                                Networking, client-server architecture, replication, and custom state synchronization for seamless gameplay loop implementations across large scales.
+                            </p>
+                        </div>
+
+                        <!-- Skill Card 2 (Green Accent) -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border-l-4 border-discord-green hover:translate-x-1.5 transition-all duration-200">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="shield-alert" class="w-5 h-5 text-discord-green animate-bounce"></i>
+                                <h3 class="text-discord-headerWhite font-bold text-[15px]">Security & Optimization</h3>
+                            </div>
+                            <p class="text-discord-grayText text-sm leading-relaxed">
+                                Exploit prevention, robust server-side structural validation, anti-cheat mechanisms, and performance profiling for high-capacity multiplayer servers.
+                            </p>
+                        </div>
+
+                        <!-- Skill Card 3 (Blue Accent) -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border-l-4 border-discord-blurple hover:translate-x-1.5 transition-all duration-200">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="gamepad-2" class="w-5 h-5 text-discord-blurple"></i>
+                                <h3 class="text-discord-headerWhite font-bold text-[15px]">Gameplay Systems</h3>
+                            </div>
+                            <p class="text-discord-grayText text-sm leading-relaxed">
+                                Core mechanics design, modular weapons scripts, combat interactions (melee/ranged), intuitive AI behaviors, and player progression networks.
+                            </p>
+                        </div>
+
+                        <!-- Skill Card 4 (Green Accent) -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border-l-4 border-discord-green hover:translate-x-1.5 transition-all duration-200">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="database" class="w-5 h-5 text-discord-green"></i>
+                                <h3 class="text-discord-headerWhite font-bold text-[15px]">Save & Data Systems</h3>
+                            </div>
+                            <p class="text-discord-grayText text-sm leading-relaxed">
+                                Rock-solid Roblox DataStore wrapper design, session locking patterns, transaction retries, and painless player migrations keeping player progress safe.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 4. FEATURED SYSTEMS SECTION -->
+                <section id="featured-systems" class="scroll-mt-16">
+                    <!-- Header -->
+                    <div class="flex items-center gap-1.5 mb-6 border-b border-discord-borderColor pb-2">
+                        <i data-lucide="hash" class="w-6 h-6 text-discord-grayText"></i>
+                        <h2 class="text-discord-headerWhite font-bold text-xl uppercase tracking-wider">featured-systems</h2>
+                        <span class="text-xs text-discord-grayText ml-2 hidden sm:inline">— A showcase of advanced systems built for Roblox (Auto-swapping every 5s · Click to inspect details)</span>
+                    </div>
+
+                    <!-- System Carousel / Showcase Container -->
+                    <div class="bg-discord-cardBg rounded-lg border border-discord-borderColor overflow-hidden shadow-lg p-5">
+                        
+                        <!-- Header inside the showcase block (Controls) -->
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-discord-borderColor">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-discord-blurple animate-pulse"></span>
+                                <span class="text-[11px] font-bold text-discord-grayText uppercase tracking-wider">Project Archives</span>
+                            </div>
+                            
+                            <!-- Carousel Arrows -->
+                            <div class="flex items-center gap-2">
+                                <button onclick="manualNavigateCarousel(-1)" class="w-8 h-8 rounded bg-discord-dark hover:bg-discord-chatInput hover:text-discord-headerWhite transition-colors flex items-center justify-center text-discord-grayText" title="Previous Project">
+                                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                                </button>
+                                <span id="carousel-indicator" class="text-xs text-discord-grayText font-mono font-semibold">1/4</span>
+                                <button onclick="manualNavigateCarousel(1)" class="w-8 h-8 rounded bg-discord-dark hover:bg-discord-chatInput hover:text-discord-headerWhite transition-colors flex items-center justify-center text-discord-grayText" title="Next Project">
+                                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- CAROUSEL TRACK (Slide Views) -->
+                        <div class="carousel-track relative overflow-hidden min-h-[360px] md:min-h-[280px]">
+                            
+                            <!-- Project Slide 1 (Active by Default) -->
+                            <div class="carousel-slide flex flex-col md:flex-row gap-6 transition-all duration-300 items-stretch cursor-pointer hover:bg-discord-dark/20 p-2.5 rounded-md" id="slide-0" onclick="openSystemDetail(0)">
+                                <!-- Generated SVG Graphic for ATGM System -->
+                                <div class="w-full md:w-[45%] h-56 bg-gradient-to-br from-blue-900/30 to-slate-900 rounded-lg flex items-center justify-center border border-discord-dark overflow-hidden relative group">
+                                    <svg class="w-4/5 h-4/5 text-discord-blurple/80" viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <line x1="0" y1="40" x2="120" y2="40" stroke="rgba(255,255,255,0.05)" stroke-dasharray="2 2" />
+                                        <line x1="60" y1="0" x2="60" y2="80" stroke="rgba(255,255,255,0.05)" stroke-dasharray="2 2" />
+                                        <!-- Animated Reticle scope -->
+                                        <circle cx="60" cy="40" r="18" stroke="#5865f2" class="sweep-radar" />
+                                        <circle cx="60" cy="40" r="2" fill="#5865f2" />
+                                        <path d="M60 10 L60 22 M60 58 L60 70 M30 40 L42 40 M78 40 L90 40" stroke="#5865f2" />
+                                        <path d="M20 60 L35 55 L35 48 L20 53 Z M35 55 L75 42 L72 35 L35 48 Z M45 52 L48 68 M60 47 L65 65" stroke="#f2f3f5" />
+                                        <path d="M85 36 L100 31 L98 29 M100 31 L95 35" stroke="#23a55a" stroke-width="2" />
+                                        <path d="M82 37 L74 40 M83 36 L76 38" stroke="#f0b232" stroke-width="1.5" />
+                                    </svg>
+                                    <span class="absolute top-3 left-3 bg-discord-blurple text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-md">
+                                        POWER ATGM SYSTEM
+                                    </span>
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span class="bg-discord-blurple text-white font-bold text-xs py-2 px-4 rounded-full flex items-center gap-1 shadow-lg">
+                                            <i data-lucide="eye" class="w-4 h-4"></i> Click to Inspect
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-extrabold text-discord-headerWhite mb-2">Power ATGM Launcher System</h3>
+                                        <p class="text-discord-grayText text-sm leading-relaxed mb-4">
+                                            An anti-tank guided missile weapon system designed with manual wire-guided controls and laser-guided lock-on tracking. Includes server-side replication logic, complex physics trajectory calculations, and visual tracking systems.
+                                        </p>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Projectiles</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Physics</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Raycasting</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Explosions</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Project Slide 2 -->
+                            <div class="carousel-slide flex flex-col md:flex-row gap-6 transition-all duration-300 items-stretch hidden cursor-pointer hover:bg-discord-dark/20 p-2.5 rounded-md" id="slide-1" onclick="openSystemDetail(1)">
+                                <!-- Generated SVG Graphic for Shahed Drone -->
+                                <div class="w-full md:w-[45%] h-56 bg-gradient-to-br from-green-950/30 to-slate-900 rounded-lg flex items-center justify-center border border-discord-dark overflow-hidden relative group">
+                                    <svg class="w-4/5 h-4/5 text-discord-green/80" viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <polygon points="60,20 80,30 80,50 60,60 40,50 40,30" stroke="rgba(35, 165, 90, 0.1)" />
+                                        <!-- Propeller spinning inside drone SVG -->
+                                        <g class="drone-rotations">
+                                            <path d="M60 15 L85 55 L75 58 L60 50 L45 58 L35 55 Z" stroke="#23a55a" stroke-width="1.8" fill="rgba(35, 165, 90, 0.05)" />
+                                            <line x1="60" y1="15" x2="60" y2="50" stroke="#23a55a" stroke-dasharray="2 2" />
+                                            <ellipse class="spin-propeller" cx="60" cy="52" rx="10" ry="2" stroke="#f0b232" />
+                                        </g>
+                                        <path d="M15 20 L40 25 L60 15" stroke="rgba(255,255,255,0.2)" stroke-dasharray="4 4" />
+                                        <circle cx="15" cy="20" r="2.5" fill="#f2f3f5" />
+                                    </svg>
+                                    <span class="absolute top-3 left-3 bg-discord-green text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-md">
+                                        POWER SHAHED-136 DRONE
+                                    </span>
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span class="bg-discord-blurple text-white font-bold text-xs py-2 px-4 rounded-full flex items-center gap-1 shadow-lg">
+                                            <i data-lucide="eye" class="w-4 h-4"></i> Click to Inspect
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-extrabold text-discord-headerWhite mb-2">Power Shahed-136 Drone</h3>
+                                        <p class="text-discord-grayText text-sm leading-relaxed mb-4">
+                                            A sophisticated, fully autonomous loitering munition system. Programmed to fly via custom user coordinate mapping or dynamic targeting scripts. Implements 3D path-finding interpolation, realistic engine audio acceleration curves, and intense particles-based VFX on explosion impacts.
+                                        </p>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Loitering Drone</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#AI</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#VFX</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Path Finding</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Project Slide 3 -->
+                            <div class="carousel-slide flex flex-col md:flex-row gap-6 transition-all duration-300 items-stretch hidden cursor-pointer hover:bg-discord-dark/20 p-2.5 rounded-md" id="slide-2" onclick="openSystemDetail(2)">
+                                <!-- Generated SVG Graphic for PADS -->
+                                <div class="w-full md:w-[45%] h-56 bg-gradient-to-br from-blue-900/30 to-slate-900 rounded-lg flex items-center justify-center border border-discord-dark overflow-hidden relative group">
+                                    <svg class="w-4/5 h-4/5 text-discord-blurple/80" viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <circle cx="60" cy="40" r="10" stroke="#5865f2" stroke-width="2" />
+                                        <line x1="45" y1="25" x2="75" y2="55" stroke="#5865f2" stroke-width="3" />
+                                        <line x1="75" y1="25" x2="45" y2="55" stroke="#5865f2" stroke-width="3" />
+                                        
+                                        <!-- Quad Propellers spinning visually -->
+                                        <g class="pads-props animate-pulse">
+                                            <circle cx="45" cy="25" r="6" stroke="#f2f3f5" stroke-dasharray="2 2" />
+                                            <circle cx="75" cy="25" r="6" stroke="#f2f3f5" stroke-dasharray="2 2" />
+                                            <circle cx="45" cy="55" r="6" stroke="#f2f3f5" stroke-dasharray="2 2" />
+                                            <circle cx="75" cy="55" r="6" stroke="#f2f3f5" stroke-dasharray="2 2" />
+                                        </g>
+                                        <circle cx="60" cy="40" r="3" fill="#f23f43" />
+                                        <rect x="36" y="32" width="6" height="16" rx="1" fill="#2b2d31" stroke="#5865f2" />
+                                        <rect x="78" y="32" width="6" height="16" rx="1" fill="#2b2d31" stroke="#5865f2" />
+                                    </svg>
+                                    <span class="absolute top-3 left-3 bg-discord-blurple text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-md">
+                                        PADS (ADVANCED DRONE)
+                                    </span>
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span class="bg-discord-blurple text-white font-bold text-xs py-2 px-4 rounded-full flex items-center gap-1 shadow-lg">
+                                            <i data-lucide="eye" class="w-4 h-4"></i> Click to Inspect
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-extrabold text-discord-headerWhite mb-2">PADS: Power Advanced Drone System</h3>
+                                        <p class="text-discord-grayText text-sm leading-relaxed mb-4">
+                                            A highly modular quadcopter and flight simulation package. Equipped with smooth algorithmic hover dampening mechanics, custom client inputs for targeting systems, weapon loadout modules.
+                                        </p>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Drone AI</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Networking</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#VFX</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Modular HUD</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Project Slide 4 -->
+                            <div class="carousel-slide flex flex-col md:flex-row gap-6 transition-all duration-300 items-stretch hidden cursor-pointer hover:bg-discord-dark/20 p-2.5 rounded-md" id="slide-3" onclick="openSystemDetail(3)">
+                                <!-- Generated SVG Graphic for PAUS -->
+                                <div class="w-full md:w-[45%] h-56 bg-gradient-to-br from-green-950/30 to-slate-900 rounded-lg flex items-center justify-center border border-discord-dark overflow-hidden relative group">
+                                    <svg class="w-4/5 h-4/5 text-discord-green/80" viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <ellipse cx="25" cy="20" rx="15" ry="4" stroke="rgba(255,255,255,0.06)" />
+                                        <ellipse cx="95" cy="60" rx="20" ry="5" stroke="rgba(255,255,255,0.06)" />
+                                        <path d="M10 32 L110 32 L64 38 L60 55 L56 38 Z" stroke="#23a55a" stroke-width="1.8" fill="rgba(35, 165, 90, 0.05)" />
+                                        <line x1="35" y1="32" x2="35" y2="40" stroke="#23a55a" />
+                                        <line x1="85" y1="32" x2="85" y2="40" stroke="#23a55a" />
+                                        <!-- radar target pulse sweep -->
+                                        <circle cx="60" cy="42" r="14" stroke="#f0b232" class="sweep-radar" />
+                                        <line x1="60" y1="28" x2="60" y2="56" stroke="#f0b232" />
+                                    </svg>
+                                    <span class="absolute top-3 left-3 bg-discord-green text-white text-[10px] font-bold px-2.5 py-1 rounded shadow-md">
+                                        PAUS (ADVANCED UAV)
+                                    </span>
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <span class="bg-discord-blurple text-white font-bold text-xs py-2 px-4 rounded-full flex items-center gap-1 shadow-lg">
+                                            <i data-lucide="eye" class="w-4 h-4"></i> Click to Inspect
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div>
+                                        <h3 class="text-xl font-extrabold text-discord-headerWhite mb-2">Power Advanced UAV System</h3>
+                                        <p class="text-discord-grayText text-sm leading-relaxed mb-4">
+                                            A high-altitude reconnaissance UAV platform featuring advanced optical zoom systems, thermal scanning viewfilters, laser designation feeds, and custom structural surveillance mechanics.
+                                        </p>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex flex-wrap gap-1.5">
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#UAV</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Camera System</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#Thermal Vision</span>
+                                            <span class="bg-discord-dark px-2.5 py-1 rounded text-xs text-discord-grayText font-mono">#SurfaceGui</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer disclaimer inside container -->
+                        <div class="mt-4 pt-3 border-t border-discord-borderColor text-[12px] text-discord-grayText flex items-center gap-2">
+                            <i data-lucide="info" class="w-4 h-4 flex-shrink-0 text-discord-blurple"></i>
+                            <p>
+                                These are examples of complex systems I've built — not a fixed specialization. I'm equally comfortable working on any gameplay genre, combat mechanic, utility system, or style.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- 5. REVIEWS SECTION -->
+                <section id="reviews" class="scroll-mt-16">
+                    <!-- Header -->
+                    <div class="flex items-center gap-1.5 mb-6 border-b border-discord-borderColor pb-2">
+                        <i data-lucide="hash" class="w-6 h-6 text-discord-grayText"></i>
+                        <h2 class="text-discord-headerWhite font-bold text-xl uppercase tracking-wider">reviews</h2>
+                        <span class="text-xs text-discord-grayText ml-2 hidden sm:inline">— What clients are saying</span>
+                    </div>
+
+                    <!-- Grid of Testimonials / Reviews (Discord Channel Chat Styling) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        
+                        <!-- Review 1 -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border border-discord-borderColor flex gap-4 items-start hover:border-discord-grayText/20 transition-all">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                                OB
+                            </div>
+                            <div class="space-y-1 min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-extrabold text-[15px] text-discord-headerWhite">osisbackup31</span>
+                                    <span class="bg-discord-green/15 text-discord-green text-[9px] font-bold px-1.5 py-0.2 rounded border border-discord-green/20">VERIFIED CLIENT</span>
+                                    <span class="text-[11px] text-discord-grayText">Today at 1:45 PM</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-discord-grayText">Product: <span class="text-discord-blurple font-semibold">PMS</span></span>
+                                    <span class="text-discord-grayText">•</span>
+                                    <span class="text-discord-green flex items-center gap-0.5 font-bold">
+                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 10/10 Rating
+                                    </span>
+                                </div>
+                                <blockquote class="text-[13.5px] text-discord-lightGray italic border-l-2 border-discord-chatInput pl-3 py-0.5 mt-2">
+                                    "It has very good quality with the explosion."
+                                </blockquote>
+                            </div>
+                        </div>
+
+                        <!-- Review 2 -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border border-discord-borderColor flex gap-4 items-start hover:border-discord-grayText/20 transition-all">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                                OB
+                            </div>
+                            <div class="space-y-1 min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-extrabold text-[15px] text-discord-headerWhite">osisbackup31</span>
+                                    <span class="bg-discord-green/15 text-discord-green text-[9px] font-bold px-1.5 py-0.2 rounded border border-discord-green/20">VERIFIED CLIENT</span>
+                                    <span class="text-[11px] text-discord-grayText">Today at 1:48 PM</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-discord-grayText">Product: <span class="text-discord-green font-semibold">Shahed-136</span></span>
+                                    <span class="text-discord-grayText">•</span>
+                                    <span class="text-discord-green flex items-center gap-0.5 font-bold">
+                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 10/10 Rating
+                                    </span>
+                                </div>
+                                <blockquote class="text-[13.5px] text-discord-lightGray italic border-l-2 border-discord-chatInput pl-3 py-0.5 mt-2">
+                                    "Very good system, good animation."
+                                </blockquote>
+                            </div>
+                        </div>
+
+                        <!-- Review 3 -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border border-discord-borderColor flex gap-4 items-start hover:border-discord-grayText/20 transition-all">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                                M3
+                            </div>
+                            <div class="space-y-1 min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-extrabold text-[15px] text-discord-headerWhite">Mohart333</span>
+                                    <span class="bg-discord-green/15 text-discord-green text-[9px] font-bold px-1.5 py-0.2 rounded border border-discord-green/20">VERIFIED CLIENT</span>
+                                    <span class="text-[11px] text-discord-grayText">Yesterday</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-discord-grayText">Product: <span class="text-discord-blurple font-semibold">PAUS</span></span>
+                                    <span class="text-discord-grayText">•</span>
+                                    <span class="text-discord-green flex items-center gap-0.5 font-bold">
+                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 10/10 Rating
+                                    </span>
+                                </div>
+                                <blockquote class="text-[13.5px] text-discord-lightGray italic border-l-2 border-discord-chatInput pl-3 py-0.5 mt-2">
+                                    "A good system, but I want improvements and something new — the developer is great, respect to him!"
+                                </blockquote>
+                            </div>
+                        </div>
+
+                        <!-- Review 4 -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border border-discord-borderColor flex gap-4 items-start hover:border-discord-grayText/20 transition-all">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                                VF
+                            </div>
+                            <div class="space-y-1 min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-extrabold text-[15px] text-discord-headerWhite">vyoflu</span>
+                                    <span class="bg-discord-green/15 text-discord-green text-[9px] font-bold px-1.5 py-0.2 rounded border border-discord-green/20">VERIFIED CLIENT</span>
+                                    <span class="text-[11px] text-discord-grayText">3 days ago</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-discord-grayText">Product: <span class="text-discord-green font-semibold">Missile Bundle</span></span>
+                                    <span class="text-discord-grayText">•</span>
+                                    <span class="text-discord-green flex items-center gap-0.5 font-bold">
+                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 9.9/10 Rating
+                                    </span>
+                                </div>
+                                <blockquote class="text-[13.5px] text-discord-lightGray italic border-l-2 border-discord-chatInput pl-3 py-0.5 mt-2">
+                                    "Good support team, and good missile system. I would give a 10/10 but no one is perfect 🔥"
+                                </blockquote>
+                            </div>
+                        </div>
+
+                        <!-- Review 5 -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border border-discord-borderColor flex gap-4 items-start hover:border-discord-grayText/20 transition-all">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-green-600 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                                FH
+                            </div>
+                            <div class="space-y-1 min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-extrabold text-[15px] text-discord-headerWhite">fhwfh5</span>
+                                    <span class="bg-discord-green/15 text-discord-green text-[9px] font-bold px-1.5 py-0.2 rounded border border-discord-green/20">VERIFIED CLIENT</span>
+                                    <span class="text-[11px] text-discord-grayText">Last week</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-discord-grayText">Product: <span class="text-discord-blurple font-semibold">PADS</span></span>
+                                    <span class="text-discord-grayText">•</span>
+                                    <span class="text-discord-green flex items-center gap-0.5 font-bold">
+                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 9.7/10 Rating
+                                    </span>
+                                </div>
+                                <blockquote class="text-[13.5px] text-discord-lightGray italic border-l-2 border-discord-chatInput pl-3 py-0.5 mt-2">
+                                    "It's perfect and I love it."
+                                </blockquote>
+                            </div>
+                        </div>
+
+                        <!-- Review 6 -->
+                        <div class="bg-discord-cardBg p-5 rounded-lg border border-discord-borderColor flex gap-4 items-start hover:border-discord-grayText/20 transition-all">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
+                                FN
+                            </div>
+                            <div class="space-y-1 min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-extrabold text-[15px] text-discord-headerWhite">FNTnickle</span>
+                                    <span class="bg-discord-green/15 text-discord-green text-[9px] font-bold px-1.5 py-0.2 rounded border border-discord-green/20">VERIFIED CLIENT</span>
+                                    <span class="text-[11px] text-discord-grayText">2 weeks ago</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-xs">
+                                    <span class="text-discord-grayText">Product: <span class="text-discord-green font-semibold">Drone & AGM</span></span>
+                                    <span class="text-discord-grayText">•</span>
+                                    <span class="text-discord-green flex items-center gap-0.5 font-bold">
+                                        <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 10/10 Rating
+                                    </span>
+                                </div>
+                                <blockquote class="text-[13.5px] text-discord-lightGray italic border-l-2 border-discord-chatInput pl-3 py-0.5 mt-2">
+                                    "Pretty sick AGM, has nice features, and the drone is also pretty sick."
+                                </blockquote>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+
+                <!-- 6. CONTACT SECTION -->
+                <section id="contact" class="scroll-mt-16">
+                    <!-- Header -->
+                    <div class="flex items-center gap-1.5 mb-6 border-b border-discord-borderColor pb-2">
+                        <i data-lucide="hash" class="w-6 h-6 text-discord-grayText"></i>
+                        <h2 class="text-discord-headerWhite font-bold text-xl uppercase tracking-wider">contact</h2>
+                        <span class="text-xs text-discord-grayText ml-2 hidden sm:inline">— Get in touch and join the community</span>
+                    </div>
+
+                    <!-- Discord Profile Embed Widget (Large Popup Card replica) -->
+                    <div class="max-w-2xl mx-auto bg-discord-cardBg rounded-xl border border-discord-borderColor overflow-hidden shadow-2xl">
+                        
+                        <!-- Header Banner Color (Discord Blurple) -->
+                        <div class="h-32 bg-discord-blurple relative">
+                            <div class="absolute right-4 top-4 bg-discord-darkest/40 backdrop-blur-sm text-[10px] text-white font-bold px-2 py-1 rounded">
+                                DISCORD POPUP
+                            </div>
+                        </div>
+
+                        <!-- Card Core Profile Section -->
+                        <div class="p-6 pt-0 relative">
+                            
+                            <!-- Overlapping Avatar Circle -->
+                            <div class="absolute -top-12 left-6">
+                                <div class="relative w-[88px] h-[88px] rounded-full bg-discord-darker p-1">
+                                    <div class="w-full h-full bg-discord-blurple rounded-full flex items-center justify-center text-white font-bold text-3xl select-none">
+                                        P
+                                    </div>
+                                    <span class="absolute bottom-1 right-1 w-5.5 h-5.5 bg-discord-green rounded-full border-4 border-discord-darker"></span>
+                                </div>
+                            </div>
+
+                            <!-- Title spacing fix and profile credentials metadata -->
+                            <div class="pt-16">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-2xl font-black text-discord-headerWhite">x3d</h3>
+                                    <span class="bg-[#23a55a]/15 text-discord-green text-[10px] font-bold px-1.5 py-0.5 rounded border border-[#23a55a]/20">
+                                        ONLINE
+                                    </span>
+                                </div>
+                                <p class="text-xs text-discord-grayText mt-1">Roblox Developer · Power Studio Founder</p>
+                            </div>
+
+                            <!-- About Me Widget section -->
+                            <div class="mt-4 bg-discord-dark p-4 rounded border border-discord-borderColor space-y-3">
+                                <h4 class="text-xs font-bold text-discord-headerWhite uppercase tracking-wide">About Me</h4>
+                                <p class="text-[13.5px] leading-relaxed text-discord-lightGray">
+                                    Got a system idea, a custom game commission, or a Roblox project that needs serious technical development power? Hit me up on Discord — my direct messages are open. Let's make it real.
+                                </p>
+                            </div>
+
+                            <!-- Custom Copyable Username Area -->
+                            <div class="mt-4">
+                                <label class="block text-xs font-bold text-discord-grayText uppercase tracking-wide mb-1.5">Discord Username</label>
+                                <div class="flex items-center bg-discord-dark rounded border border-discord-borderColor p-1.5 pl-3">
+                                    <i data-lucide="user" class="w-4 h-4 text-discord-grayText mr-2 flex-shrink-0"></i>
+                                    <span class="text-sm font-semibold text-discord-headerWhite select-all flex-1 tracking-wide" id="discord-username">power_dev1</span>
+                                    
+                                    <!-- Interactive Click to Copy Button -->
+                                    <button onclick="copyToClipboard()" id="btn-copy-username" class="bg-discord-blurple hover:bg-[#4752c4] active:scale-95 text-white font-bold text-xs px-4 py-1.5 rounded transition-all-200 flex items-center gap-1.5">
+                                        <i data-lucide="copy" class="w-3.5 h-3.5" id="copy-icon"></i>
+                                        <span id="copy-text">Copy</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Action Direct Button -->
+                            <div class="mt-6 pt-4 border-t border-discord-borderColor">
+                                <a href="https://discord.gg/3Wup79jA8d" target="_blank" rel="noopener noreferrer" class="w-full bg-discord-blurple hover:bg-[#4752c4] text-white font-bold py-3 px-4 rounded transition-all-200 flex items-center justify-center gap-2 shadow hover:shadow-lg active:scale-[0.99]">
+                                    <!-- Discord Inline SVG Icon -->
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 127.14 96.36">
+                                        <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a77.7,77.7,0,0,0,6.63-10.85,68.43,68.43,0,0,1-10.5-5c.88-.65,1.72-1.34,2.51-2a75.58,75.58,0,0,0,73,0c.79.7,1.63,1.39,2.51,2a68.43,68.43,0,0,1-10.5,5,77.7,77.7,0,0,0,6.63,10.85,105.73,105.73,0,0,0,31.53-18.83C129.5,48.54,121.72,25.75,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/>
+                                    </svg>
+                                    Join Power Studio Discord
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- 7. SITE FOOTER -->
+            <footer class="bg-discord-darkest px-4 md:px-8 py-3.5 border-t border-discord-borderColor flex flex-col sm:flex-row justify-between items-center text-xs text-discord-grayText gap-2 flex-shrink-0 select-none transition-all-300">
+                <span class="font-medium text-center sm:text-left">© 2026 Power Studio · Roblox Game & Systems Developer</span>
+                <span class="flex items-center gap-1 font-semibold text-discord-grayText/85">
+                    Crafted with care <i data-lucide="heart" class="w-3.5 h-3.5 text-discord-red fill-current"></i> Inspired by Discord
+                </span>
+            </footer>
+
+        </div>
+    </div>
+
+
+    <!-- DYNAMIC DISCORD QUICK SWITCHER (Ctrl+K MODAL) -->
+    <div id="quick-switcher-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 hidden transition-opacity duration-200">
+        <div class="bg-discord-cardBg w-full max-w-lg rounded-lg border border-discord-borderColor shadow-2xl overflow-hidden flex flex-col">
+            <!-- Search bar header -->
+            <div class="p-4 border-b border-discord-borderColor bg-discord-darkest flex items-center gap-3">
+                <i data-lucide="search" class="w-5 h-5 text-discord-grayText"></i>
+                <input type="text" id="quick-switcher-search" oninput="filterQuickSwitcher()" placeholder="Where would you like to go?" class="w-full bg-transparent text-discord-headerWhite placeholder:text-discord-grayText/50 focus:outline-none text-base">
+                <span class="text-xs bg-discord-dark px-1.5 py-0.5 rounded text-discord-grayText font-mono uppercase">ESC</span>
+            </div>
+
+            <!-- List elements -->
+            <div class="max-h-80 overflow-y-auto p-2 space-y-1" id="quick-switcher-list">
+                <!-- Group channels -->
+                <div>
+                    <span class="text-[11px] font-bold text-discord-grayText tracking-wider uppercase px-2 py-1 block">Channels</span>
+                    <div class="space-y-0.5">
+                        <button onclick="quickGoTo('about-me')" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-4 h-4"></i> about-me</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Bio & Experience</span>
+                        </button>
+                        <button onclick="quickGoTo('skills')" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-4 h-4"></i> skills</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Expertise Specs</span>
+                        </button>
+                        <button onclick="quickGoTo('featured-systems')" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-4 h-4"></i> featured-systems</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Roblox Projects</span>
+                        </button>
+                        <button onclick="quickGoTo('reviews')" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-4 h-4"></i> reviews</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Client Recommendations</span>
+                        </button>
+                        <button onclick="quickGoTo('contact')" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-4 h-4"></i> contact</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">DMs & Invites</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Group products/systems -->
+                <div class="pt-3">
+                    <span class="text-[11px] font-bold text-discord-grayText tracking-wider uppercase px-2 py-1 block">Systems & Products</span>
+                    <div class="space-y-0.5">
+                        <button onclick="quickGoToProduct(0)" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-4 h-4"></i> ATGM Launcher System</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Inspect Weapon</span>
+                        </button>
+                        <button onclick="quickGoToProduct(1)" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-4 h-4"></i> Shahed-136 Drone</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Inspect Autonomous</span>
+                        </button>
+                        <button onclick="quickGoToProduct(2)" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-4 h-4"></i> PADS Advanced Quad</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Inspect Drone Package</span>
+                        </button>
+                        <button onclick="quickGoToProduct(3)" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="layers" class="w-4 h-4"></i> PAUS Surveillance UAV</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Inspect Optical Scan</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer indicator -->
+            <div class="p-3 bg-discord-darkest text-right text-[11px] text-discord-grayText border-t border-discord-borderColor flex justify-between items-center">
+                <span>Select with mouse to navigate instantly</span>
+                <button onclick="closeQuickSwitcher()" class="hover:text-white transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- DETAILED SYSTEM INSPECT MODAL -->
+    <div id="system-detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 hidden transition-all duration-300">
+        <!-- added "animate-modal-pop" when activated to bring up popup with Discord-style scaling springiness -->
+        <div id="system-detail-content" class="bg-discord-cardBg w-full max-w-2xl rounded-lg border border-discord-borderColor shadow-2xl overflow-hidden flex flex-col">
+            
+            <!-- Modal Title Banner -->
+            <div class="p-5 bg-discord-darkest flex justify-between items-center border-b border-discord-borderColor">
+                <div class="flex items-center gap-2">
+                    <span class="bg-discord-blurple text-white font-mono font-bold text-xs px-2.5 py-1 rounded animate-pulse" id="modal-project-badge">PROJECT ARCHIVE</span>
+                    <h3 class="text-lg font-extrabold text-discord-headerWhite" id="modal-project-title">Power ATGM Launcher System</h3>
+                </div>
+                <button onclick="closeSystemDetail()" class="text-discord-grayText hover:text-discord-headerWhite transition-all p-1 rounded hover:bg-discord-chatInput">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Detail Contents -->
+            <div class="p-6 overflow-y-auto space-y-6 max-h-[75vh]">
+                
+                <!-- Overview Info grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="bg-discord-dark p-3.5 rounded border border-discord-borderColor">
+                        <span class="text-[11px] font-bold text-discord-grayText uppercase block mb-1">Architecture</span>
+                        <span class="text-sm font-semibold text-discord-headerWhite" id="modal-architecture">Modular Framework</span>
+                    </div>
+                    <div class="bg-discord-dark p-3.5 rounded border border-discord-borderColor">
+                        <span class="text-[11px] font-bold text-discord-grayText uppercase block mb-1">Network Profile</span>
+                        <span class="text-sm font-semibold text-discord-headerWhite" id="modal-network">Server-Replicated</span>
+                    </div>
+                    <div class="bg-discord-dark p-3.5 rounded border border-discord-borderColor">
+                        <span class="text-[11px] font-bold text-discord-grayText uppercase block mb-1">Performance Cost</span>
+                        <span class="text-sm font-semibold text-discord-headerWhite" id="modal-optim">60 Hz Tick-rate</span>
+                    </div>
+                </div>
+
+                <!-- Deep Technical Specifications Paragraphs -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-discord-headerWhite uppercase tracking-wide">Developer Architecture Brief</h4>
+                    <p class="text-sm text-discord-lightGray leading-relaxed" id="modal-long-description">
+                        An advanced anti-tank guided missile weapon package. Features precise client wire guidance trajectory simulations which sync smoothly across clients using latency compensation checks.
+                    </p>
+                </div>
+
+                <!-- ADDED: Product Picture Preview Space (Above the script) -->
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-discord-headerWhite uppercase tracking-wide flex items-center gap-1">
+                        <i data-lucide="image" class="w-3.5 h-3.5 text-discord-blurple"></i> System Media Preview
+                    </h4>
+                    <div class="relative w-full h-56 bg-discord-darkest rounded-lg border border-discord-borderColor overflow-hidden flex items-center justify-center group shadow-inner">
+                        <img id="modal-project-img" src="" alt="System Media Preview" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03] hidden" onerror="this.classList.add('hidden'); document.getElementById('modal-img-placeholder').classList.remove('hidden');">
+                        
+                        <!-- Fallback Placeholder when image fails to load or empty -->
+                        <div id="modal-img-placeholder" class="flex flex-col items-center justify-center text-discord-grayText p-5 text-center">
+                            <div class="p-3 bg-discord-dark/50 rounded-full mb-2 border border-discord-borderColor">
+                                <i data-lucide="image-off" class="w-8 h-8 text-discord-blurple animate-pulse"></i>
+                            </div>
+                            <p class="text-xs font-bold text-discord-headerWhite">Awaiting Media Link Attachment</p>
+                            <p class="text-[11px] max-w-sm mt-1.5 leading-relaxed">
+                                To show your custom Roblox screenshot, replace the placeholder URL in the <code class="bg-discord-dark px-1 py-0.5 rounded text-discord-blurple font-mono">image</code> key in the <code class="bg-discord-dark px-1 py-0.5 rounded text-discord-blurple font-mono">projectData</code> variable at the bottom of the code.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom code preview block for authentic feeling -->
+                <div class="space-y-1">
+                    <div class="bg-discord-darkest rounded border border-discord-borderColor p-4 font-mono text-xs overflow-x-auto space-y-1">
+                        <div class="flex items-center justify-between text-[11px] text-discord-grayText border-b border-discord-borderColor pb-2 mb-2">
+                            <span>ReplicationController.luau</span>
+                            <span class="text-[10px] text-discord-blurple">ROBLOX LUA</span>
+                        </div>
+                        <pre class="text-green-400 font-semibold leading-relaxed" id="modal-code-mock">
+-- Simulated Raycast Guidance
+local function updateTrajectory(delta)
+    local targetPos = camera:ScreenPointToRay(mouse.X, mouse.Y)
+    network:FireServer("GuidanceUpdate", targetPos.Direction)
+end</pre>
+                    </div>
+                    <!-- ADDED: Disclaimer directly below every script -->
+                    <p class="text-[11.5px] text-discord-grayText/80 font-medium italic text-center mt-1.5 flex items-center justify-center gap-1">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i> For information purposes only, not real script
+                    </p>
+                </div>
+
+                <!-- Diagnostic performance markers -->
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-discord-headerWhite uppercase tracking-wide">Technical Diagnostic Markers</h4>
+                    <div class="grid grid-cols-2 gap-4 text-xs font-mono text-discord-grayText">
+                        <div class="flex justify-between border-b border-discord-borderColor py-1">
+                            <span>Physics Solver Type:</span>
+                            <span class="text-discord-headerWhite" id="solver-val">Verlet Integration</span>
+                        </div>
+                        <div class="flex justify-between border-b border-discord-borderColor py-1">
+                            <span>Client Cache Load:</span>
+                            <span class="text-discord-headerWhite" id="cache-val">&lt;0.05ms</span>
+                        </div>
+                        <div class="flex justify-between border-b border-discord-borderColor py-1">
+                            <span>Visual Rendering:</span>
+                            <span class="text-discord-headerWhite" id="render-val">Custom Client VFX</span>
+                        </div>
+                        <div class="flex justify-between border-b border-discord-borderColor py-1">
+                            <span>Anti-Exploit Check:</span>
+                            <span class="text-discord-headerWhite" id="security-val">Active Server Verification</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer of inspect detail -->
+            <div class="p-4 bg-discord-darkest text-right border-t border-discord-borderColor flex justify-between items-center text-xs">
+                <span class="text-discord-grayText italic">Verified secure implementation.</span>
+                <button onclick="closeSystemDetail()" class="bg-discord-blurple hover:bg-[#4752c4] text-white font-bold py-1.5 px-4 rounded transition-all">Close Diagnostic</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Init Lucide Vector Icons
+        lucide.createIcons();
+
+        // Theme Toggle Support (Saves preferences to memory runtime defaults)
+        let isLightTheme = false;
+        function toggleTheme() {
+            isLightTheme = !isLightTheme;
+            const body = document.body;
+            const themeBtn = document.getElementById('theme-btn');
+            
+            if (isLightTheme) {
+                body.classList.add('light-theme');
+                if (themeBtn) {
+                    themeBtn.innerHTML = `<i data-lucide="sun" class="w-4.5 h-4.5 text-orange-500 animate-spin" style="animation-duration: 8s"></i>`;
+                }
+            } else {
+                body.classList.remove('light-theme');
+                if (themeBtn) {
+                    themeBtn.innerHTML = `<i data-lucide="settings" class="w-4.5 h-4.5"></i>`;
+                }
+            }
+            // Reinitialize lucide vectors inside settings buttons
+            lucide.createIcons();
+            updateScrollSpy(); // Recalculate colors active state
+        }
+
+        // Mobile Sidebar Controls
+        function toggleMobileSidebar(open) {
+            const sidebar = document.getElementById('mobile-sidebar');
+            const drawer = document.getElementById('mobile-drawer');
+            const backdrop = document.getElementById('mobile-backdrop');
+
+            if (open) {
+                sidebar.classList.remove('pointer-events-none');
+                backdrop.classList.remove('opacity-0');
+                backdrop.classList.add('opacity-100', 'pointer-events-auto');
+                drawer.classList.remove('-translate-x-full');
+            } else {
+                sidebar.classList.add('pointer-events-none');
+                backdrop.classList.add('opacity-0');
+                backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+                drawer.classList.add('-translate-x-full');
+            }
+        }
+
+        // Handle backdrop clicking
+        document.getElementById('mobile-backdrop').addEventListener('click', () => toggleMobileSidebar(false));
+
+        // Desktop and Mobile Interactive Carousel Implementation
+        let currentSlideIndex = 0;
+        const totalSlides = 4;
+        let autoRotateInterval;
+
+        // Auto rotation timer setup
+        function startAutoRotation() {
+            stopAutoRotation(); // Prevent duplicates
+            autoRotateInterval = setInterval(() => {
+                navigateCarousel(1);
+            }, 5000);
+        }
+
+        function stopAutoRotation() {
+            if (autoRotateInterval) {
+                clearInterval(autoRotateInterval);
+            }
+        }
+        
+        function navigateCarousel(direction) {
+            // Retrieve current slide element
+            const currentSlide = document.getElementById(`slide-${currentSlideIndex}`);
+            currentSlide.classList.add('hidden');
+            currentSlide.classList.remove('slide-in-right');
+            
+            // Calculate next index looping both ways
+            currentSlideIndex = (currentSlideIndex + direction + totalSlides) % totalSlides;
+            
+            // Show new active slide with animation
+            const nextSlide = document.getElementById(`slide-${currentSlideIndex}`);
+            nextSlide.classList.remove('hidden');
+            nextSlide.classList.add('slide-in-right');
+            
+            // Update carousel tracking display indicators
+            document.getElementById('carousel-indicator').innerText = `${currentSlideIndex + 1}/${totalSlides}`;
+        }
+
+        // Manual slide navigation resets the 5s timer
+        function manualNavigateCarousel(direction) {
+            navigateCarousel(direction);
+            startAutoRotation(); // Reset timer
+        }
+
+        // Deep technical inspection datasets for product cards (Enriched with advanced game dev details)
+        const projectData = [
+            {
+                title: "Power ATGM Launcher System",
+                badge: "POWER ATGM SYSTEM",
+                image: "atgm.png", // Default preview graphic, replace with yours
+                architecture: "Weapon Framework v3 (L-OP)",
+                network: "Parallel-Replicated Network",
+                optim: "0.01ms Phys Update Rate",
+                desc: "An advanced wire-guided anti-tank missile simulator. It features server-authoritative raycast sanity checks to prevent coordinate manipulation, Verlet integration algorithm calculations for realistic wind and gravity sag, and a specialized frame throttle syncing clients down to 10 bytes/sec.",
+                code: `-- Advanced Verlet Trajectory integration with acceleration drag mapping\nlocal function stepATGMPath(missile, delta)\n    local dragCoeff = 0.05\n    local force = targetDir * MissilePower - (missile.Velocity * dragCoeff)\n    missile.Velocity = missile.Velocity + (force + Vector3.new(0, -9.81 * 0.15, 0)) * delta\n    missile.Position = missile.Position + missile.Velocity * delta\n    missile.CFrame = CFrame.lookAt(missile.Position, missile.Position + missile.Velocity)\nend`,
+                solver: "Verlet Kinematics Engine",
+                cache: "0.02ms (Client Memory)",
+                render: "FPS-Unlocked Client Tween",
+                security: "Server Anti-Exploit Interceptor"
+            },
+            {
+                title: "Power Shahed-136 Drone",
+                badge: "POWER SHAHED-136 DRONE",
+                image: "PowerShahed.png", // Default preview graphic, replace with yours
+                architecture: "Autonomous Node AI v1.2",
+                network: "Low-Bandwidth Event Stream",
+                optim: "Bezier Segment Profiler",
+                desc: "Delta-wing UAV loitering system programmed for programmatic flight mapping. Utilizes multi-point Bezier curve algorithms to smooth curves between waypoint vectors. Implements dynamic sound modulation that shifts pitch based on the engine load factor and aerodynamic drag.",
+                code: `-- Multi-Point Bezier Spline Calculation\nlocal function computeBezierCurve(p0, p1, p2, p3, t)\n    local u = 1 - t\n    return (u^3 * p0) + (3 * u^2 * t * p1) + (3 * u * t^2 * p2) + (t^3 * p3)\nend\n-- Dynamic sound engine hooks up pitch with the derived speed acceleration vector`,
+                solver: "Bezier Node Splines",
+                cache: "0.04ms (Path Generation)",
+                render: "Sound Frequency Pitch Shifter",
+                security: "Flight Speed Boundary Warden"
+            },
+            {
+                title: "PADS: Power Advanced Drone System",
+                badge: "PADS (ADVANCED DRONE)",
+                image: "pads.png", // Default preview graphic, replace with yours
+                architecture: "State Machine Quad Flight",
+                network: "Client-Predicted Physics",
+                optim: "PID Flight Stabilizer",
+                desc: "Modular quadcopter and hexacopter flight platform with programmatic auto-levelling. Employs a Proportional-Integral-Derivative (PID) controller algorithm to counter environmental impulses. Fully customizable hardpoints allow real-time attachment changes.",
+                code: `-- PID Gyro Stabilization Calculation\nlocal function calculatePIDFeedback(error, lastError, integral, dt)\n    local derivative = (error - lastError) / dt\n    integral = integral + error * dt\n    return (Kp * error) + (Ki * integral) + (Kd * derivative), integral\nend\n-- Balances motor thrusters independently to resolve tilt error`,
+                solver: "PID Feedback Controller",
+                cache: "0.03ms (Stabilizer Cache)",
+                render: "Interactive Frame SurfaceGui",
+                security: "Network Physics Replication Check"
+            },
+            {
+                title: "PAUS: Power Advanced UAV System",
+                badge: "PAUS (ADVANCED UAV)",
+                image: "PAUS.png", // Default preview graphic, replace with yours
+                architecture: "Strategic Optics & Scanning",
+                network: "ViewportFrame Render Queue",
+                optim: "Canvas Thermal Filter",
+                desc: "High-altitude reconnaissance platform that utilizes Roblox ViewportFrames to stream ground activities. Includes real-time camera zoom scales, structural wireframe viewports, laser navigation tracking overlays, and thermal heat signature tracking.",
+                code: `-- High-Altitude Optics Thermal Heat Signature Highlighter\nlocal function applyThermalSignature(targetChar)\n    for _, bodyPart in ipairs(targetChar:GetChildren()) do\n        if bodyPart:IsA("BasePart") then\n            -- Apply high-intensity emissive neon thermal overlay\n            bodyPart.Color = Color3.fromRGB(255, 65, 5)\n            bodyPart.Material = Enum.Material.Neon\n        end\n    end\nend`,
+                solver: "Optical Highlight Engine",
+                cache: "0.01ms (Shader Filter)",
+                render: "Realtime ViewportFrame Feed",
+                security: "Camera Raycast Occlusion Check"
+            }
+        ];
+
+        // Open detailed inspect modal
+        function openSystemDetail(index) {
+            const data = projectData[index];
+            if (!data) return;
+
+            document.getElementById('modal-project-badge').innerText = data.badge;
+            document.getElementById('modal-project-title').innerText = data.title;
+            document.getElementById('modal-architecture').innerText = data.architecture;
+            document.getElementById('modal-network').innerText = data.network;
+            document.getElementById('modal-optim').innerText = data.optim;
+            document.getElementById('modal-long-description').innerText = data.desc;
+            document.getElementById('modal-code-mock').innerText = data.code;
+            
+            document.getElementById('solver-val').innerText = data.solver;
+            document.getElementById('cache-val').innerText = data.cache;
+            document.getElementById('render-val').innerText = data.render;
+            document.getElementById('security-val').innerText = data.security;
+
+            // Handle Preview Photo Insertion
+            const imgElement = document.getElementById('modal-project-img');
+            const imgPlaceholder = document.getElementById('modal-img-placeholder');
+
+            if (data.image && data.image.trim() !== "") {
+                imgElement.src = data.image;
+                imgElement.classList.remove('hidden');
+                imgPlaceholder.classList.add('hidden');
+            } else {
+                imgElement.src = "";
+                imgElement.classList.add('hidden');
+                imgPlaceholder.classList.remove('hidden');
+            }
+
+            // Trigger Discord Pop Up transition animation
+            const modal = document.getElementById('system-detail-modal');
+            const modalContent = document.getElementById('system-detail-content');
+            
+            modal.classList.remove('hidden');
+            modalContent.classList.remove('animate-modal-pop');
+            void modalContent.offsetWidth; // Force CSS reflow to restart keyframe animation
+            modalContent.classList.add('animate-modal-pop');
+            
+            modal.style.opacity = "1";
+            stopAutoRotation(); // Pause slider while diagnostic is open
+        }
+
+        // Close detailed inspect modal
+        function closeSystemDetail() {
+            const modal = document.getElementById('system-detail-modal');
+            modal.style.opacity = "0";
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                startAutoRotation(); // Resume automated carousel
+            }, 150);
+        }
+
+        // Quick Switcher search panel methods
+        function openQuickSwitcher() {
+            const modal = document.getElementById('quick-switcher-modal');
+            modal.classList.remove('hidden');
+            document.getElementById('quick-switcher-search').value = "";
+            document.getElementById('quick-switcher-search').focus();
+            filterQuickSwitcher();
+        }
+
+        function closeQuickSwitcher() {
+            const modal = document.getElementById('quick-switcher-modal');
+            modal.classList.add('hidden');
+            document.getElementById('header-search-input').blur();
+        }
+
+        // Close on ESC keypress
+        window.addEventListener('keydown', (e) => {
+            if (e.key === "Escape") {
+                closeQuickSwitcher();
+                closeSystemDetail();
+            }
+        });
+
+        // Autocomplete search filter logic
+        function filterQuickSwitcher() {
+            const searchVal = document.getElementById('quick-switcher-search').value.toLowerCase();
+            const list = document.getElementById('quick-switcher-list');
+            const items = list.querySelectorAll('button');
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchVal)) {
+                    item.style.display = "flex";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        // Redirect handlers from Quick Switcher
+        function quickGoTo(sectionId) {
+            closeQuickSwitcher();
+            const section = document.getElementById(sectionId);
+            if (section) {
+                chatFeed.scrollTo({
+                    top: section.offsetTop - chatFeed.offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Route to the product directly
+        function quickGoToProduct(productIndex) {
+            closeQuickSwitcher();
+            // Scroll to featured systems carousel first
+            quickGoTo('featured-systems');
+            // Shift carousel directly to match selected item
+            currentSlideIndex = productIndex;
+            // Shift indices in carousel to match chosen product indexes cleanly
+            for (let i = 0; i < totalSlides; i++) {
+                document.getElementById(`slide-${i}`).classList.add('hidden');
+            }
+            document.getElementById(`slide-${productIndex}`).classList.remove('hidden');
+            document.getElementById('carousel-indicator').innerText = `${productIndex + 1}/${totalSlides}`;
+            // Open inspection specs right away
+            openSystemDetail(productIndex);
+        }
+
+        // Custom Click to Clipboard Logic
+        function copyToClipboard() {
+            const usernameSpan = document.getElementById('discord-username');
+            const tempInput = document.createElement('input');
+            tempInput.value = usernameSpan.textContent;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand('copy');
+                const btn = document.getElementById('btn-copy-username');
+                const btnIcon = document.getElementById('copy-icon');
+                const btnText = document.getElementById('copy-text');
+                
+                btn.classList.replace('bg-discord-blurple', 'bg-discord-green');
+                btn.classList.replace('hover:bg-[#4752c4]', 'hover:bg-[#1a8543]');
+                btnText.innerText = "Copied!";
+                btnIcon.setAttribute('data-lucide', 'check');
+                lucide.createIcons();
+
+                setTimeout(() => {
+                    btn.classList.replace('bg-discord-green', 'bg-discord-blurple');
+                    btn.classList.replace('hover:bg-[#1a8543]', 'hover:bg-[#4752c4]');
+                    btnText.innerText = "Copy";
+                    btnIcon.setAttribute('data-lucide', 'copy');
+                    lucide.createIcons();
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            } finally {
+                document.body.removeChild(tempInput);
+            }
+        }
+
+        // Scroll Spy & Header updater implementation
+        const chatFeed = document.getElementById('chat-feed');
+        const sections = document.querySelectorAll('section[id]');
+        const channelLinks = document.querySelectorAll('.channel-link');
+        const headerTitle = document.getElementById('active-channel-header');
+        const headerDesc = document.getElementById('active-channel-description');
+
+        const descriptionMap = {
+            "about-me": "Get to know the developer behind the systems.",
+            "skills": "Core areas of technical expertise.",
+            "featured-systems": "A showcase of advanced systems built for Roblox.",
+            "reviews": "What clients are saying.",
+            "contact": "Get in touch and join the community."
+        };
+
+        function updateScrollSpy() {
+            let currentActiveSection = "about-me";
+            const feedScrollTop = chatFeed.scrollTop;
+
+            sections.forEach(sec => {
+                const secTop = sec.offsetTop - chatFeed.offsetTop - 40;
+                if (feedScrollTop >= secTop) {
+                    currentActiveSection = sec.getAttribute('id');
+                }
+            });
+
+            channelLinks.forEach(link => {
+                if (link.getAttribute('data-section') === currentActiveSection) {
+                    link.classList.add('channel-active');
+                } else {
+                    link.classList.remove('channel-active');
+                }
+            });
+
+            if (headerTitle) headerTitle.innerText = currentActiveSection;
+            if (headerDesc) headerDesc.innerText = descriptionMap[currentActiveSection] || "";
+        }
+
+        chatFeed.addEventListener('scroll', updateScrollSpy);
+        
+        channelLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-section');
+                const targetSec = document.getElementById(targetId);
+
+                if (targetSec) {
+                    chatFeed.scrollTo({
+                        top: targetSec.offsetTop - chatFeed.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Run primary trigger to state settings on initialization
+        updateScrollSpy();
+        // Start automatic system carousel loop
+        startAutoRotation();
+    </script>
+</body>
+</html>
