@@ -102,9 +102,6 @@
             animation: spinPropeller 0.8s linear infinite;
             transform-origin: 60px 52px;
         }
-        .spin-propeller-pads {
-            animation: spinPropeller 0.6s linear infinite;
-        }
 
         @keyframes sweepRadar {
             0% { stroke-dashoffset: 80; }
@@ -113,14 +110,6 @@
         .sweep-radar {
             stroke-dasharray: 20 10;
             animation: sweepRadar 3s linear infinite;
-        }
-
-        @keyframes pulseBeam {
-            0%, 100% { opacity: 0.3; transform: scale(0.98); }
-            50% { opacity: 1; transform: scale(1.02); }
-        }
-        .pulse-beam {
-            animation: pulseBeam 2s ease-in-out infinite;
         }
 
         /* Slide Transition Animations for carousel track */
@@ -182,6 +171,10 @@
                         <a href="#featured-systems" onclick="toggleMobileSidebar(false)" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[15px]" data-section="featured-systems">
                             <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
                             <span class="font-medium">featured-systems</span>
+                        </a>
+                        <a href="#ask-assistant" onclick="toggleMobileSidebar(false)" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[15px]" data-section="ask-assistant">
+                            <i data-lucide="message-square animate-pulse" class="w-5 h-5 text-indigo-400 mr-1.5"></i>
+                            <span class="font-medium">ask-assistant</span>
                         </a>
                         <a href="#reviews" onclick="toggleMobileSidebar(false)" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[15px]" data-section="reviews">
                             <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
@@ -247,6 +240,12 @@
                 <a href="#featured-systems" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[14px]" data-section="featured-systems">
                     <i data-lucide="hash" class="w-5 h-5 mr-1.5 text-discord-grayText group-hover:text-discord-lightGray transition-colors"></i>
                     <span class="font-medium">featured-systems</span>
+                </a>
+
+                <!-- ADDED: Ask Assistant Navigation Anchor in Sidebar -->
+                <a href="#ask-assistant" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[14px]" data-section="ask-assistant">
+                    <i data-lucide="message-square" class="w-5 h-5 mr-1.5 text-discord-blurple animate-pulse"></i>
+                    <span class="font-semibold text-discord-blurple">ask-assistant</span>
                 </a>
 
                 <a href="#reviews" class="channel-link flex items-center px-2 py-1.5 rounded text-discord-grayText hover:text-discord-lightGray hover:bg-discord-chatInput/50 transition-all-300 group text-[14px]" data-section="reviews">
@@ -321,7 +320,7 @@
             </header>
 
             <!-- CHAT FEED CONTAINER WITH VERTICAL SCROLL -->
-            <main id="chat-feed" class="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-12">
+            <main id="chat-feed" class="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-12 animate-fade-in">
 
                 <!-- WELCOME BANNER (Classic Discord First Message Style) -->
                 <section class="border-b border-discord-borderColor pb-8 select-none transition-all-300">
@@ -718,6 +717,97 @@
                 </section>
 
 
+                <!-- ADDED: ASK ASSISTANT CHAT CHANNEL SECTION -->
+                <section id="ask-assistant" class="scroll-mt-16">
+                    <div class="flex items-center gap-1.5 mb-6 border-b border-discord-borderColor pb-2">
+                        <i data-lucide="message-square" class="w-6 h-6 text-discord-blurple"></i>
+                        <h2 class="text-discord-headerWhite font-bold text-xl uppercase tracking-wider">ask-assistant</h2>
+                        <span class="text-xs text-discord-grayText ml-2 hidden sm:inline">— Chat with Power Assistant for instant answers</span>
+                    </div>
+
+                    <div class="bg-discord-cardBg rounded-lg border border-discord-borderColor shadow-lg flex flex-col h-[520px] overflow-hidden">
+                        
+                        <!-- Bot Channel Header status -->
+                        <div class="p-3 bg-discord-darkest/40 border-b border-discord-borderColor flex justify-between items-center text-xs">
+                            <div class="flex items-center gap-2">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-discord-green opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-discord-green"></span>
+                                </span>
+                                <span class="text-discord-grayText font-semibold">Active Assistant Connection</span>
+                            </div>
+                            <button onclick="clearChatAssistant()" class="text-discord-grayText hover:text-discord-headerWhite flex items-center gap-1 transition-colors">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Chat
+                            </button>
+                        </div>
+
+                        <!-- Message Log Container (Scrollable) -->
+                        <div id="assistant-chat-log" class="flex-1 p-4 overflow-y-auto space-y-4">
+                            
+                            <!-- Initial Welcome message -->
+                            <div class="flex gap-4 items-start animate-fade-in">
+                                <div class="w-10 h-10 rounded-full bg-discord-blurple flex items-center justify-center font-bold text-white text-sm flex-shrink-0 relative">
+                                    PA
+                                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-discord-green rounded-full border-2 border-discord-cardBg"></span>
+                                </div>
+                                <div class="space-y-1 flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-extrabold text-[14px] text-discord-headerWhite">Power Assistant</span>
+                                        <span class="bg-discord-blurple text-[9px] text-white font-bold px-1 rounded">BOT</span>
+                                        <span class="text-[11px] text-discord-grayText">Just Now</span>
+                                    </div>
+                                    <p class="text-[14px] text-discord-lightGray leading-relaxed">
+                                        Hello! I'm **Power Assistant**, your personal guide to x3d's Roblox systems development. I am loaded with verified details regarding commission turnarounds, project pricing strategies, and supported system genres.
+                                    </p>
+                                    <p class="text-[14px] text-discord-lightGray">
+                                        What would you like to ask about? Click a prompt below or type your inquiry:
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Typing feedback indicator -->
+                        <div id="bot-typing-indicator" class="px-4 py-1 text-xs text-discord-grayText italic hidden">
+                            <span class="flex items-center gap-1.5">
+                                <span class="animate-bounce font-bold">.</span>
+                                <span class="animate-bounce font-bold" style="animation-delay: 0.2s">.</span>
+                                <span class="animate-bounce font-bold" style="animation-delay: 0.4s">.</span>
+                                <span>Power Assistant is typing...</span>
+                            </span>
+                        </div>
+
+                        <!-- Quick Action Prompts Box -->
+                        <div class="p-3 bg-discord-darkest/10 border-t border-discord-borderColor space-y-2">
+                            <span class="text-[10px] font-bold text-discord-grayText uppercase tracking-wider block">Quick-Select Prompts</span>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="sendQuickPrompt('What is your pricing policy?', 1)" class="bg-discord-chatInput hover:bg-discord-blurple/30 hover:text-discord-headerWhite text-discord-lightGray text-xs font-semibold py-1.5 px-3 rounded-full border border-discord-borderColor transition-all">
+                                    💰 Pricing Guidelines
+                                </button>
+                                <button onclick="sendQuickPrompt('How fast can you build systems?', 2)" class="bg-discord-chatInput hover:bg-discord-blurple/30 hover:text-discord-headerWhite text-discord-lightGray text-xs font-semibold py-1.5 px-3 rounded-full border border-discord-borderColor transition-all">
+                                    ⚡ Delivery Turnaround
+                                </button>
+                                <button onclick="sendQuickPrompt('What game genres are supported?', 3)" class="bg-discord-chatInput hover:bg-discord-blurple/30 hover:text-discord-headerWhite text-discord-lightGray text-xs font-semibold py-1.5 px-3 rounded-full border border-discord-borderColor transition-all">
+                                    🎮 Genre Flexibility
+                                </button>
+                                <button onclick="sendQuickPrompt('Where do I go for product support or to contact you?', 4)" class="bg-discord-chatInput hover:bg-discord-blurple/30 hover:text-discord-headerWhite text-discord-lightGray text-xs font-semibold py-1.5 px-3 rounded-full border border-discord-borderColor transition-all">
+                                    🤝 Contact & Support
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chat input Area -->
+                        <div class="p-4 bg-discord-darkest/40 flex items-center gap-2">
+                            <input type="text" id="assistant-user-input" onkeydown="handleAssistantInput(event)" placeholder="Message #ask-assistant (Type here & press Enter)" class="w-full bg-discord-chatInput text-discord-headerWhite text-sm rounded-lg px-4 py-3 border border-discord-borderColor focus:outline-none focus:ring-1 focus:ring-discord-blurple transition-all">
+                            <button onclick="submitUserQuery()" class="p-3 bg-discord-blurple hover:bg-[#4752c4] text-white rounded-lg transition-colors" title="Send Message">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                    </div>
+                </section>
+
+
                 <!-- 5. REVIEWS SECTION -->
                 <section id="reviews" class="scroll-mt-16">
                     <!-- Header -->
@@ -863,7 +953,6 @@
                                 </div>
                                 <div class="flex items-center gap-2 text-xs">
                                     <span class="text-discord-grayText">Product: <span class="text-discord-green font-semibold">Drone & AGM</span></span>
-                                    <span class="text-discord-grayText">•</span>
                                     <span class="text-discord-green flex items-center gap-0.5 font-bold">
                                         <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> 10/10 Rating
                                     </span>
@@ -878,7 +967,7 @@
                 </section>
 
 
-                <!-- 6. CONTACT SECTION -->
+                <!-- 7. CONTACT SECTION -->
                 <section id="contact" class="scroll-mt-16">
                     <!-- Header -->
                     <div class="flex items-center gap-1.5 mb-6 border-b border-discord-borderColor pb-2">
@@ -1000,6 +1089,10 @@
                         <button onclick="quickGoTo('featured-systems')" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
                             <span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-4 h-4"></i> featured-systems</span>
                             <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Roblox Projects</span>
+                        </button>
+                        <button onclick="quickGoTo('ask-assistant')" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
+                            <span class="flex items-center gap-1.5"><i data-lucide="message-square animate-pulse" class="w-4 h-4 text-discord-blurple"></i> ask-assistant</span>
+                            <span class="text-[11px] text-discord-grayText group-hover:text-white/80">Power Assistant Chat</span>
                         </button>
                         <button onclick="quickGoTo('reviews')" class="w-full text-left flex items-center justify-between px-3 py-2 rounded text-discord-lightGray hover:bg-discord-blurple hover:text-white group">
                             <span class="flex items-center gap-1.5"><i data-lucide="hash" class="w-4 h-4"></i> reviews</span>
@@ -1235,16 +1328,20 @@ end</pre>
         function navigateCarousel(direction) {
             // Retrieve current slide element
             const currentSlide = document.getElementById(`slide-${currentSlideIndex}`);
-            currentSlide.classList.add('hidden');
-            currentSlide.classList.remove('slide-in-right');
+            if (currentSlide) {
+                currentSlide.classList.add('hidden');
+                currentSlide.classList.remove('slide-in-right');
+            }
             
             // Calculate next index looping both ways
             currentSlideIndex = (currentSlideIndex + direction + totalSlides) % totalSlides;
             
             // Show new active slide with animation
             const nextSlide = document.getElementById(`slide-${currentSlideIndex}`);
-            nextSlide.classList.remove('hidden');
-            nextSlide.classList.add('slide-in-right');
+            if (nextSlide) {
+                nextSlide.classList.remove('hidden');
+                nextSlide.classList.add('slide-in-right');
+            }
             
             // Update carousel tracking display indicators
             document.getElementById('carousel-indicator').innerText = `${currentSlideIndex + 1}/${totalSlides}`;
@@ -1380,6 +1477,7 @@ end</pre>
             filterQuickSwitcher();
         }
 
+        // Close search panel
         function closeQuickSwitcher() {
             const modal = document.getElementById('quick-switcher-modal');
             modal.classList.add('hidden');
@@ -1439,7 +1537,7 @@ end</pre>
             openSystemDetail(productIndex);
         }
 
-        // Custom Click to Clipboard Logic
+        // Custom Copy to Clipboard Logic
         function copyToClipboard() {
             const usernameSpan = document.getElementById('discord-username');
             const tempInput = document.createElement('input');
@@ -1474,6 +1572,157 @@ end</pre>
             }
         }
 
+
+        /* ========================================================
+           ADDED: INTERACTIVE CHAT ASSISTANT LOGIC (Power Assistant)
+           ======================================================== */
+        
+        // Custom rule-set answers mapped from your specifications
+        const botAnswers = {
+            pricing: "Commission pricing **varies completely by project** depending on the specific scope, complexity, and custom assets required. Let's discuss your ideas directly on our **Power Studio Discord** to get you an accurate quote!",
+            time: "Delivery time is highly optimized!\n• **Lightweight systems** can be completed and delivered in as little as **1 day**.\n• **Whole games** or comprehensive structural overhauls are scheduled to take **no more than 1 month**.",
+            genre: "I am fully comfortable developing systems for **any game genre** on Roblox! Whether it's realistic military simulations, roleplay frameworks, tycoon setups, anime combat engines, or custom obbies—there is no genre limitation.",
+            contact: "You can easily find product support or coordinate project ideas through the **Power Studio Discord** server! Alternatively, you can directly message me on Discord at username: **power_dev1**.",
+            default: "I'm not quite sure about that exact question. Feel free to ask me about my **pricing**, **turnaround times**, **supported genres**, or **how to contact me for support**! You can also click one of the quick prompts above."
+        };
+
+        function handleAssistantInput(event) {
+            if (event.keyCode === 13) {
+                submitUserQuery();
+            }
+        }
+
+        function submitUserQuery() {
+            const inputField = document.getElementById('assistant-user-input');
+            const query = inputField.value.trim();
+            if (!query) return;
+
+            // Clear input box
+            inputField.value = "";
+
+            // Render user message in chat
+            renderChatMessage("user", query);
+
+            // Determine suitable reply
+            let answerText = botAnswers.default;
+            const lowerQuery = query.toLowerCase();
+
+            if (lowerQuery.includes('price') || lowerQuery.includes('pricing') || lowerQuery.includes('cost') || lowerQuery.includes('commission') || lowerQuery.includes('how much')) {
+                answerText = botAnswers.pricing;
+            } else if (lowerQuery.includes('time') || lowerQuery.includes('fast') || lowerQuery.includes('duration') || lowerQuery.includes('how long') || lowerQuery.includes('turnaround') || lowerQuery.includes('day') || lowerQuery.includes('month')) {
+                answerText = botAnswers.time;
+            } else if (lowerQuery.includes('genre') || lowerQuery.includes('combat') || lowerQuery.includes('military') || lowerQuery.includes('simulation') || lowerQuery.includes('obby') || lowerQuery.includes('types of game')) {
+                answerText = botAnswers.genre;
+            } else if (lowerQuery.includes('support') || lowerQuery.includes('contact') || lowerQuery.includes('discord') || lowerQuery.includes('help') || lowerQuery.includes('server')) {
+                answerText = botAnswers.contact;
+            }
+
+            // Simulate Bot Typing
+            triggerBotTypingResponse(answerText);
+        }
+
+        function sendQuickPrompt(promptText, categoryId) {
+            // Render user message
+            renderChatMessage("user", promptText);
+
+            // Get mapped response
+            let answerText = botAnswers.default;
+            if (categoryId === 1) answerText = botAnswers.pricing;
+            if (categoryId === 2) answerText = botAnswers.time;
+            if (categoryId === 3) answerText = botAnswers.genre;
+            if (categoryId === 4) answerText = botAnswers.contact;
+
+            triggerBotTypingResponse(answerText);
+        }
+
+        function triggerBotTypingResponse(replyText) {
+            const typingIndicator = document.getElementById('bot-typing-indicator');
+            typingIndicator.classList.remove('hidden');
+
+            // Scroll assistant view to bottom
+            const logContainer = document.getElementById('assistant-chat-log');
+            logContainer.scrollTop = logContainer.scrollHeight;
+
+            setTimeout(() => {
+                typingIndicator.classList.add('hidden');
+                renderChatMessage("bot", replyText);
+            }, 1000);
+        }
+
+        function renderChatMessage(sender, text) {
+            const logContainer = document.getElementById('assistant-chat-log');
+            
+            // Format markdown markers like bold **text** in text channels
+            const formattedText = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`([^`]+)`/g, '<code class="bg-discord-darkest px-1 py-0.5 rounded text-discord-blurple font-mono text-xs">$1</code>')
+                .replace(/\n/g, '<br>');
+
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            let messageHtml = "";
+            if (sender === "user") {
+                messageHtml = `
+                    <div class="flex gap-4 items-start animate-fade-in">
+                        <div class="w-10 h-10 rounded-full bg-discord-chatInput flex items-center justify-center font-bold text-discord-lightGray text-sm flex-shrink-0">
+                            ME
+                        </div>
+                        <div class="space-y-0.5 flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="font-extrabold text-[14px] text-discord-headerWhite">Visitor</span>
+                                <span class="text-[11px] text-discord-grayText">${timeStr}</span>
+                            </div>
+                            <p class="text-[14px] text-discord-lightGray leading-relaxed break-words">${formattedText}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageHtml = `
+                    <div class="flex gap-4 items-start animate-fade-in">
+                        <div class="w-10 h-10 rounded-full bg-discord-blurple flex items-center justify-center font-bold text-white text-sm flex-shrink-0 relative">
+                            PA
+                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-discord-green rounded-full border-2 border-discord-cardBg"></span>
+                        </div>
+                        <div class="space-y-0.5 flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="font-extrabold text-[14px] text-discord-headerWhite">Power Assistant</span>
+                                <span class="bg-discord-blurple text-[9px] text-white font-bold px-1 rounded select-none">BOT</span>
+                                <span class="text-[11px] text-discord-grayText">${timeStr}</span>
+                            </div>
+                            <p class="text-[14px] text-discord-lightGray leading-relaxed break-words">${formattedText}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            logContainer.insertAdjacentHTML('beforeend', messageHtml);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearChatAssistant() {
+            const logContainer = document.getElementById('assistant-chat-log');
+            logContainer.innerHTML = `
+                <div class="flex gap-4 items-start animate-fade-in">
+                    <div class="w-10 h-10 rounded-full bg-discord-blurple flex items-center justify-center font-bold text-white text-sm flex-shrink-0 relative">
+                        PA
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-discord-green rounded-full border-2 border-discord-cardBg"></span>
+                    </div>
+                    <div class="space-y-1 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-[14px] text-discord-headerWhite">Power Assistant</span>
+                            <span class="bg-discord-blurple text-[9px] text-white font-bold px-1 rounded">BOT</span>
+                            <span class="text-[11px] text-discord-grayText">Just Now</span>
+                        </div>
+                        <p class="text-[14px] text-discord-lightGray leading-relaxed">
+                            Chat cleared! Ask me anything regarding commission pricing models, delivery speed frames, or project genres.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+
         // Scroll Spy & Header updater implementation
         const chatFeed = document.getElementById('chat-feed');
         const sections = document.querySelectorAll('section[id]');
@@ -1485,6 +1734,7 @@ end</pre>
             "about-me": "Get to know the developer behind the systems.",
             "skills": "Core areas of technical expertise.",
             "featured-systems": "A showcase of advanced systems built for Roblox.",
+            "ask-assistant": "Ask Power Assistant questions regarding our custom Roblox systems development.",
             "reviews": "What clients are saying.",
             "contact": "Get in touch and join the community."
         };
